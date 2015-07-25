@@ -1,0 +1,35 @@
+---
+deployment-directory: "/tmp/deploy"
+servers:
+  test:
+    url: testserver.com
+    port: 22
+  prod:
+    url: prodserver.com
+    port: 22
+applications:
+  application-one:
+    git: https://github.com/jamis/net-ssh-shell.git
+    build-commands:
+      test:
+        - make test
+        - tar -zcf archive.tar.gz *
+      prod:
+        - make prod
+        - tar -zcf archive.tar.gz *
+    file-to-deploy: archive.tar.gz
+    file-deploy-location: /home/me
+    ssh-commands:
+      test:
+        - cd /deploy/dir
+        - rm -rf *
+        - me /home/me/archive.tar.gz .
+        - tar -zxf archive.tar.gz
+        - rm archive.tar.gz
+      prod:
+        - cd /deploy/dir
+        - rm -rf *
+        - me /home/me/archive.tar.gz .
+        - tar -zxf archive.tar.gz
+        - rm archive.tar.gz
+---
