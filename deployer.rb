@@ -4,7 +4,7 @@ require 'fileutils'
 require 'net/scp'
 require 'net/ssh'
 
-config = YAML.load_file(ARGV[0] ? ARGV[0] : '/home/blair/IdeaProjects/ruby/deployer/config.yml')
+config = YAML.load_file(ARGV[0] ? ARGV[0] : 'config.yml')
 deployment_directory = config['deployment-directory']
 
 applications = []
@@ -34,7 +34,8 @@ FileUtils.makedirs(deployment_directory) unless File.directory?(deployment_direc
 if File.directory?(application_directory)
   puts '-- Fetching latest --'
   g = Git.open(application_directory)
-  g.fetch
+  g.pull
+  g.checkout('master')
   g.reset_hard
 else
   puts '-- Cloning project --'
@@ -78,7 +79,7 @@ remote_server = config['servers'][server]
 if configured_app['file-to-deploy']
   puts '-- Uploading file --'
   Net::SCP.upload!(remote_server['url'],
-                   'blair',
+                   remote_server['user'],
                    "#{application_directory}/#{configured_app['file-to-deploy']}",
                    configured_app['file-deploy-location'],
                    {ssh: {port: remote_server['port']}})
@@ -87,7 +88,7 @@ end
 
 if configured_app['ssh-commands']
   puts '-- Running ssh commands --'
-  Net::SSH.start(remote_server['url'], 'blair', port: remote_server['port']) do |ssh|
+  Net::SSH.start(remote_server['url'], remote_server['user'], port: remote_server['port']) do |ssh|
     output = ssh.exec! configured_app['ssh-commands'][server].join(' && ')
     if output
       puts output
