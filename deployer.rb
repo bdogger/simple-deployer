@@ -4,7 +4,18 @@ require 'fileutils'
 require 'net/scp'
 require 'net/ssh'
 
-config = YAML.load_file(ARGV[0] ? ARGV[0] : 'config.yml')
+if ARGV.length && ARGV[0] == '-h'
+  puts 'Usage:  deployer.rb  OR deployer.rb <config_file.yml>'
+end
+
+config_file = ARGV[0] ? ARGV[0] : 'config.yml'
+
+unless File.exists?(config_file)
+  puts 'Invalid config file'
+  exit(false)
+end
+
+config = YAML.load_file(config_file)
 deployment_directory = config['deployment-directory']
 
 applications = []
@@ -34,9 +45,9 @@ FileUtils.makedirs(deployment_directory) unless File.directory?(deployment_direc
 if File.directory?(application_directory)
   puts '-- Fetching latest --'
   g = Git.open(application_directory)
-  g.pull
-  g.checkout('master')
   g.reset_hard
+  g.fetch
+  g.checkout('master')
 else
   puts '-- Cloning project --'
   Git.clone(configured_app['git'], application_name, path: deployment_directory)
