@@ -3,9 +3,11 @@ deployment-directory: "/tmp/deploy"
 servers:
   test:
     url: testserver.com
+    user: user
     port: 22
   prod:
     url: prodserver.com
+    user: produser
     port: 22
 applications:
   application-one:
