@@ -4,15 +4,15 @@ Simple Deployer
 
 To run using a config file named config.yml in the same directory
     
-    $ simple_deployer
+    $ cli_deployer
     
 To run specifiying a config
 
-    $ simple_deployer /path/to/my_config.yml
+    $ cli_deployer /path/to/my_config.yml
       
 **Why**
 
-I no longer needed a continuosintegration environment, so no more Jenkins!
+I no longer needed a continuos integration environment, so no more Jenkins!
  
 In the time it would take to find something else that did what I needed, I could write my own deployer.
 
