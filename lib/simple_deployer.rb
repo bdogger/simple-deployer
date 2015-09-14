@@ -95,7 +95,7 @@ class SimpleDeployer
     remote_server = config['servers'][server]
 
 
-    if configured_app['file-to-deploy']
+    if configured_app['file-to-deploy'] && remote_server['url']
       puts '-- Uploading file --'
       Net::SCP.upload!(remote_server['url'],
                        remote_server['user'],
