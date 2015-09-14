@@ -48,18 +48,11 @@ class SimpleDeployer
     configured_app = config['applications'][application_name]
     application_directory = "#{deployment_directory}/#{application_name}"
 
-    FileUtils.makedirs(deployment_directory) unless File.directory?(deployment_directory)
+    FileUtils.rm_rf (deployment_directory) if File.directory?(deployment_directory)
+    FileUtils.makedirs(deployment_directory)
 
-    if File.directory?(application_directory)
-      puts '-- Fetching latest --'
-      g = Git.open(application_directory)
-      g.reset_hard
-      g.fetch
-      g.checkout('master')
-    else
-      puts '-- Cloning project --'
-      Git.clone(configured_app['git'], application_name, path: deployment_directory)
-    end
+    puts '-- Cloning project --'
+    Git.clone(configured_app['git'], application_name, path: deployment_directory)
 
     servers = []
     configured_app['build-commands'].each_key { |server| servers << server }
